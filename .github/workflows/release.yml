@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build project
+      run: npm run build
+    
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_OUTPUT
+    
+    - name: Create release zip
+      run: |
+        mkdir -p badges
+        cp main.js manifest.json styles.css badges/
+        zip -r badges-v${{ steps.get_version.outputs.VERSION }}.zip badges/
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref }}
+        name: Release v${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## Changes
+          
+          * Updated for Obsidian v${{ steps.get_version.outputs.VERSION }}
+          * See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md) for detailed changes
+          
+          ## Installation
+          
+          ### Manual Installation
+          1. Download the `badges-v${{ steps.get_version.outputs.VERSION }}.zip` file
+          2. Extract the contents to your vault's `.obsidian/plugins/` directory
+          3. Enable the plugin in Obsidian settings
+          
+          ### Individual Files
+          Download `main.js`, `manifest.json`, and `styles.css` and place them in your vault's `.obsidian/plugins/badges/` directory.
+        draft: false
+        prerelease: false
+        files: |
+          badges-v${{ steps.get_version.outputs.VERSION }}.zip
+          main.js
+          manifest.json
+          styles.css
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 

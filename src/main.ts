@@ -45,9 +45,9 @@ function buildPostProcessor(): MarkdownPostProcessor {
 	return (el) => {
     el.findAll("code").forEach(
 			(code) => {
-				let text:string|undefined = code.innerText.trim();
+				const text:string|undefined = code.innerText.trim();
 				if (text !== undefined && text.startsWith('[!!') && text.endsWith(']')) {
-          let newEl = buildBadge(text);
+          const newEl = buildBadge(text);
           if (newEl !== undefined) {
             code.replaceWith(newEl);
           }
@@ -63,7 +63,7 @@ class BadgeWidget extends WidgetType {
   }
 
   toDOM(view: EditorView): HTMLElement {
-    let text:string = this.badge[0].substring(1).substring(this.badge[0].length-2,0);
+    const text:string = this.badge[0].substring(1).substring(this.badge[0].length-2,0);
       return buildBadge(text);
   }
 }
@@ -85,7 +85,7 @@ const viewPlugin = ViewPlugin.fromClass(class {
     if (!view.state.field(editorLivePreviewField)) {
       return Decoration.none;
     }
-    let builder = new RangeSetBuilder<Decoration>();
+    const builder = new RangeSetBuilder<Decoration>();
     let lines: number[] = [];
     if (view.state.doc.length > 0) {
       lines = Array.from(
@@ -96,20 +96,12 @@ const viewPlugin = ViewPlugin.fromClass(class {
 
     const currentSelections = [...view.state.selection.ranges];
 
-    for (let n of lines) {
+    for (const n of lines) {
       const line = view.state.doc.line(n);
-      const startOfLine = line.from;
-      const endOfLine = line.to;
       
-      let currentLine = false;
-      currentSelections.forEach((r) => {
-        if (r.to >= startOfLine && r.from <= endOfLine) {
-          currentLine = true;
-          return;
-        }
-      });
+      // Line selection checking is handled per match below
 
-      let matches = Array.from(line.text.matchAll(REGEXP))
+      const matches = Array.from(line.text.matchAll(REGEXP))
       for (const match of matches) {
         let add = true
         const from = match.index != undefined ? match.index + line.from : -1
@@ -135,19 +127,19 @@ const viewPlugin = ViewPlugin.fromClass(class {
 
 function buildBadge(text: string) {
   // HTML Elements
-  let newEl:HTMLElement = document.createElement("span");
-  let iconEl:HTMLElement = document.createElement("span");
-  let titleEl:HTMLElement = document.createElement("span");
-  let textEl:HTMLElement = document.createElement("span");
-  let attrType:any = "";
-	let part:string = text.substring(2);
-  let content:string = part.substring(part.length-1,1).trim();
+  const newEl:HTMLElement = document.createElement("span");
+  const iconEl:HTMLElement = document.createElement("span");
+  const titleEl:HTMLElement = document.createElement("span");
+  const textEl:HTMLElement = document.createElement("span");
+  let attrType: string = "";
+	const part:string = text.substring(2);
+  const content:string = part.substring(part.length-1,1).trim();
   // no content
   if (!content.length) { 
 		newEl.setText("Badges syntax error");
 		return newEl;
 	}
-  let parts:any[] = content.split(':');
+  const parts: string[] = content.split(':');
   // return if NO CONTENT
   if (parts.length < 2) {
 		newEl.setText("❌ Badges syntax error");
@@ -157,10 +149,10 @@ function buildBadge(text: string) {
   // type of badge
   let badgeType:string = parts[0].trim();
   // build and check for extras
-  let extras:any[] = badgeType.split("|");
-  let hasExtra:boolean = extras.length > 1;
+  const extras: string[] = badgeType.split("|");
+  const hasExtra:boolean = extras.length > 1;
   // title value for badge
-  let badgeContent:string = parts[1].trim();
+  const badgeContent:string = parts[1].trim();
   // custom badge
   if (extras.length == 3) {
     // icon
@@ -169,9 +161,9 @@ function buildBadge(text: string) {
     setIcon(iconEl, extras[1]);
     iconEl.setAttr("aria-label", extras[2]);
     // details
-    let details:any[] = parts[1].split("|");
+    const details: string[] = parts[1].split("|");
     // title
-    let title:string = details[0].trim();
+    const title:string = details[0].trim();
     titleEl.addClass("inline-badge-title-inner");
     titleEl.setText(title);
     newEl.addClass('inline-badge');
@@ -194,7 +186,7 @@ function buildBadge(text: string) {
     if (hasExtra) {
       // Github badges
       if (extras[1].startsWith('ghb>') || extras[1].startsWith('ghs>')) {
-        let ghType:string = extras[1].split('>')[1].trim();
+        const ghType:string = extras[1].split('>')[1].trim();
         setIcon(iconEl, "github");
         iconEl.addClass("inline-badge-icon");
         iconEl.setAttr("aria-label", "Github");

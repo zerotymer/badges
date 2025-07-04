@@ -1,5 +1,10 @@
 ## Badges
 
+[![CI](https://github.com/gapmiss/badges/actions/workflows/ci.yml/badge.svg)](https://github.com/gapmiss/badges/actions/workflows/ci.yml)
+[![Release](https://github.com/gapmiss/badges/actions/workflows/release.yml/badge.svg)](https://github.com/gapmiss/badges/actions/workflows/release.yml)
+[![GitHub release](https://img.shields.io/github/release/gapmiss/badges.svg)](https://github.com/gapmiss/badges/releases)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 ### Introduction
 
 A light-weight plugin for displaying inline "badges" in [Obsidian.md](https://github.com/obsidianmd) which acts similarly to a key-value store(database) for querying via default search or [Dataview](https://github.com/blacksmithgu/obsidian-dataview) plugin.
