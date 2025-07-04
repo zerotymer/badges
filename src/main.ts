@@ -37,7 +37,7 @@ export default class BadgesPlugin extends Plugin {
   }
 
   onunload() {
-    console.log('Badges plugin loaded')
+    console.log('Badges plugin unloaded')
   }
 }
 
